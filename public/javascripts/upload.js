@@ -22,22 +22,52 @@ gxp.plugins.Username = Ext.extend(gxp.plugins.Tool, {
   menuHandler: function(obj) {
     return this.downloadFormat(obj.fileFormat);
   },
+  checkFormats: function(styles) {
+	if (!styles) return false;
+	var found = false;
+	for (var i=0; i<styles.length; i++) {
+		// indexOf returns (-1), it doesn't equal false; 0 equals false
+		if ((styles[i].name.indexOf('sf')+1)||(styles[i].name.indexOf('raster')+1))
+			found = true;
+	}
+	return !found;
+  },
   setMenu: function(menu) {
     var featureManager, fileFormat, _i, _len, _ref, _results;
     featureManager = this.target.tools[this.featureManager];
     menu.removeAll();
-    _ref = featureManager.layerRecord.get('fileFormats');
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      fileFormat = _ref[_i];
-      _results.push(menu.addItem({
-        text: fileFormat,
-        fileFormat: fileFormat,
-        handler: this.menuHandler,
-        scope: this
-      }));
-    }
-    return _results;
+	var styles = featureManager.layerRecord.data.styles;
+	if (this.checkFormats(styles)) {
+		_ref = featureManager.layerRecord.get('fileFormats');
+		_results = [];
+		if (_ref==null) return _results;
+		for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+		  fileFormat = _ref[_i];
+		  if (fileFormat==="SHAPE-ZIP") {
+			_results.push(menu.addItem({
+				text: fileFormat,
+				fileFormat: fileFormat,
+				handler: this.menuHandler,
+				scope: this
+			  }));
+		  }
+		  else if (fileFormat==="json") {
+			_results.push(menu.addItem({
+				text: "GeoJSON",
+				fileFormat: fileFormat,
+				handler: this.menuHandler,
+				scope: this
+			  }));
+		  }
+		  /*_results.push(menu.addItem({
+			text: fileFormat,
+			fileFormat: fileFormat,
+			handler: this.menuHandler,
+			scope: this
+		  }));*/
+		}
+		return _results;
+	}
   },
   downloadFormat: function(format) {
     var data, featureManager, filters, getFeatureUrl, getFeatureUrlArr, i, newOptions, props, protocol, testWfsUrl, urlArr;
