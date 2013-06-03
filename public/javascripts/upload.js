@@ -4,7 +4,7 @@ Ext.namespace("gxp.plugins");
 gxp.plugins.Username = Ext.extend(gxp.plugins.Tool, {
   loadFileQueryTimout: 300000,
   ptype: "gispro_upload",
-  uploadText: "Download",
+  uploadText: locale.upload.uploadText,
   addActions: function() {
     var menu;
     menu = new Ext.Button({
