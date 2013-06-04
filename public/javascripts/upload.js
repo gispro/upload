@@ -43,18 +43,18 @@ gxp.plugins.Username = Ext.extend(gxp.plugins.Tool, {
 		if (_ref==null) return _results;
 		for (_i = 0, _len = _ref.length; _i < _len; _i++) {
 		  fileFormat = _ref[_i];
-		  if (fileFormat==="SHAPE-ZIP") {
+		  if (fileFormat.indexOf("SHAPE-ZIP")+1) {
 			_results.push(menu.addItem({
-				text: fileFormat,
-				fileFormat: fileFormat,
+				text: "SHAPE-ZIP",
+				fileFormat: "SHAPE-ZIP",
 				handler: this.menuHandler,
 				scope: this
 			  }));
 		  }
-		  else if (fileFormat==="json") {
+		  if (fileFormat.indexOf("json")+1) {
 			_results.push(menu.addItem({
 				text: "GeoJSON",
-				fileFormat: fileFormat,
+				fileFormat: "json",
 				handler: this.menuHandler,
 				scope: this
 			  }));
