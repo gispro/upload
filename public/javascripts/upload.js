@@ -95,29 +95,31 @@ gxp.plugins.Username = Ext.extend(gxp.plugins.Tool, {
     return this.loadFile(testWfsUrl, {
       body: data,
       url: getFeatureUrl
-    });
+    },newOptions.featureNS+":"+newOptions.featureType );
   },
-  loadFile: function(url, postData) {
+  loadFile: function(url, postData, layer) {
     var form, id, iframe, removeElements;
-    id = "queryFormIframe";
+    id = "queryFormIframe"+new Date().getTime();
     form = this.createForm(url, postData, id, document.body);
-    iframe = this.createIframe(id, document.body);
-    removeElements = function() {
+	iframe = this.createIframe(id, document.body, layer);    
+	removeElements = function() {
       document.body.removeChild(iframe);
       return document.body.removeChild(form);
     };
-    setTimeout(removeElements, this.loadFileQueryTimout);
-    form.submit();
+    setTimeout(removeElements, this.loadFileQueryTimout);    
+	form.submit();		
+	gxp.plugins.Logger.log("Отправлен запрос на скачивание слоя " + layer, gxp.plugins.Logger.prototype.LOG_LEVEL_INFO);	
     form.removeAttribute("id");
     form.removeAttribute("name");
     iframe.removeAttribute("id");
     return iframe.removeAttribute("name");
   },
-  createIframe: function(id, root) {
+  createIframe: function(id, root, layer) {
     var el;
-    el = document.createElement("iframe");
+    el = document.createElement("iframe");	
     el.setAttribute("id", id);
     el.setAttribute("name", id);
+	el.setAttribute("onload", "if (window.frames['id'].document.title == 'Not Found') {gxp.plugins.Logger.log('Ошибка при скачивании слоя layer. Прокси-сервер недоступен', gxp.plugins.Logger.prototype.LOG_LEVEL_NETWORK_LOCAL_ERRORS);}".replace('layer',layer).replace('id',id));	
     if (root != null) root.appendChild(el);
     return el;
   },
@@ -126,7 +128,7 @@ gxp.plugins.Username = Ext.extend(gxp.plugins.Tool, {
     el = document.createElement("form");
     el.setAttribute("method", "post");
     el.setAttribute("target", target);
-    el.setAttribute("action", url);
+    el.setAttribute("action", url);	
     for (k in postData) {
       input = document.createElement("input");
       input.setAttribute("id", k);
